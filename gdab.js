@@ -1,3 +1,19 @@
+window.onbeforeunload = function() {
+  setTimeout(function() {
+    window.stop();
+  }, 1);
+};
+
+window.open = function() {
+  return null;
+};
+
+window.confirm = function() {
+  return false;
+};
+
+window.alert = function() {};
+
 const currentOrigin = window.location.origin;
 
 function isAllowed(url) {
@@ -14,15 +30,6 @@ function isAllowed(url) {
     return true;
   }
 }
-
-const originalWindowOpen = window.open;
-window.open = function(url, ...args) {
-  if (url && !isAllowed(url)) {
-    console.error("BLOCKED POPUP:", url);
-    return null;
-  }
-  return originalWindowOpen.apply(this, [url, ...args]);
-};
 
 const originalFetch = window.fetch;
 window.fetch = function(resource, options) {
@@ -119,7 +126,7 @@ window.WebSocket = function(url, protocols) {
   if (isAllowed(url)) {
     return new originalWebSocket(url, protocols);
   }
-  console.error("Blocked connection:", url);
+  console.error("BLOCKED CONNECTION:", url);
   return {
     url: url,
     readyState: 3,
